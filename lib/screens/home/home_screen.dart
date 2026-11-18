@@ -1,732 +1,176 @@
 import 'package:flutter/material.dart';
-
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/app_models.dart';
-import '../../models/ministry_order_model.dart';
 import '../../services/app_state.dart';
 import '../../widgets/falah_app_bar.dart';
-import '../../widgets/weather_card.dart';
-import '../../widgets/smart_assistant_banner.dart';
-import '../lands/add_land_screen.dart';
-import '../ai_assistant/crop_disease_scanner_screen.dart';
+import '../add_land/screen_21_add_land_owner_details.dart';
+import '../lands/screen_20_land_record_details.dart';
+import '../ai_assistant/ai_assistant_screen.dart';
 import '../services/fertilizer_calculator_screen.dart';
 import '../services/seeds_catalog_screen.dart';
-import '../ministry/ministry_orders_screen.dart';
-import '../ministry/create_supply_request_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  void _open(BuildContext context, Widget page) {
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final appState = AppState();
-    final user = appState.currentUser;
-    final lands = appState.lands;
-
-    final approvedCount = lands
-        .where((l) => l.status == LandReviewStatus.approved)
-        .length;
-    final reviewCount = lands
-        .where((l) => l.status == LandReviewStatus.underReview)
-        .length;
-    final draftCount = lands
-        .where((l) => l.status == LandReviewStatus.draft)
-        .length;
-
-    final readyOrders = appState.ministryOrders
-        .where((o) => o.status == OrderStatus.approvedReadyForPickup)
-        .toList();
-
-    return Scaffold(
-      appBar: FalahAppBar(
-        title: 'منظومة فلاح الزراعية',
-        subtitle: 'المساعد الذكي والربط السيادي مع وزارة الزراعة',
-        customActions: [
-          IconButton(
-            icon: const Icon(
-              Icons.notifications_none_rounded,
-              color: Colors.white,
-            ),
-            onPressed: () => appState.setTabIndex(3),
-            tooltip: 'الإشعارات',
+    // الاستماع للحالة يجعل العدادات والسجلات تتحدث بعد الرجوع من النماذج.
+    return ListenableBuilder(
+      listenable: AppState(),
+      builder: (context, _) {
+        final state = AppState();
+        final lands = state.lands;
+        final recent = [...lands]..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+        final area = lands.fold<double>(0, (sum, land) => sum + land.estimatedAreaHectares);
+        return Scaffold(
+          appBar: FalahAppBar(
+            title: 'فلاح', subtitle: 'أرضك، ونموّك، في مكان واحد',
+            customActions: [IconButton(
+              tooltip: 'الإشعارات',
+              onPressed: () => state.setTabIndex(3),
+              icon: Badge(
+                isLabelVisible: state.unreadNotificationsCount > 0,
+                label: Text('${state.unreadNotificationsCount}'),
+                child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+              ),
+            )],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Hero Greeting & Add Land CTA Banner
-            _buildHeroGreeting(context, user, appState),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 18),
-
-                  // 2. Prominent "مساعد فلاح الذكي" Entry
-                  const SmartAssistantBanner(),
-
-                  const SizedBox(height: 18),
-
-                  // 3. Ministry & Cooperatives Distribution Hub Banner (Linking Farmer to Ministry)
-                  _buildMinistryLinkBanner(context, readyOrders),
-
-                  const SizedBox(height: 20),
-
-                  // 4. Simple Weather Summary
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'الأرصاد والمناخ الزراعي',
-                        style: AppTypography.titleLarge.copyWith(
-                          color: AppColors.forestDarkest,
-                        ),
-                      ),
-                      Text(
-                        'بيانات محطات الرصد',
-                        style: AppTypography.bodySmall,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const WeatherCard(),
-
-                  const SizedBox(height: 22),
-
-                  // 5. Land Record Statuses Overview
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'سجلات الأراضي والحيازات',
-                        style: AppTypography.titleLarge.copyWith(
-                          color: AppColors.forestDarkest,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => appState.setTabIndex(1),
-                        child: Text(
-                          'عرض الكل (${lands.length})',
-                          style: AppTypography.labelMedium.copyWith(
-                            color: AppColors.forestPrimary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+          body: LayoutBuilder(builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+              child: Center(child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 760),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('مرحبًا، ${state.currentUser.fullName.split(' ').first} 🌿', style: AppTypography.headlineLarge),
                   const SizedBox(height: 6),
-                  _buildRecordStatusesRow(
-                    context,
-                    appState,
-                    approvedCount,
-                    reviewCount,
-                    draftCount,
-                  ),
-
+                  Text('تابع أراضيك وخطوتك القادمة بكل وضوح.', style: AppTypography.bodyLarge.copyWith(color: AppColors.textSecondary)),
                   const SizedBox(height: 22),
-
-                  // 6. Quick Services Grid
-                  Text(
-                    'الخدمات السريعة',
-                    style: AppTypography.titleLarge.copyWith(
-                      color: AppColors.forestDarkest,
-                    ),
-                  ),
+                  _hero(context, state, lands.length, area),
+                  const SizedBox(height: 24),
+                  _heading('نظرة على سجلاتك', 'كل الأراضي', () => state.setTabIndex(1)),
+                  const SizedBox(height: 12),
+                  // Wrap يحافظ على وضوح البطاقات مع تكبير خط الجهاز.
+                  LayoutBuilder(builder: (context, box) {
+                    final columns = box.maxWidth >= 560 ? 4 : 2;
+                    final width = (box.maxWidth - (columns - 1) * 12) / columns;
+                    return Wrap(spacing: 12, runSpacing: 12, children: LandReviewStatus.values.map((status) {
+                      final count = lands.where((land) => land.status == status).length;
+                      return SizedBox(width: width, child: Card(child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Row(children: [Icon(status.icon, color: status.color, size: 22), const Spacer(), Text('$count', style: AppTypography.headlineLarge)]),
+                          const SizedBox(height: 12), Text(status.label, style: AppTypography.titleMedium),
+                        ]),
+                      )));
+                    }).toList());
+                  }),
+                  const SizedBox(height: 26),
+                  _heading('أحدث الأراضي', 'عرض الكل', () => state.setTabIndex(1)),
+                  const SizedBox(height: 12),
+                  if (recent.isEmpty) Card(child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(children: [
+                      const Icon(Icons.landscape_outlined, size: 42, color: AppColors.forestPrimary),
+                      const SizedBox(height: 12),
+                      Text('ابدأ بأرضك الأولى', style: AppTypography.titleLarge),
+                      const SizedBox(height: 6),
+                      const Text('سجّل بيانات الأرض وحدودها ثم أرسلها للمراجعة.'),
+                    ]),
+                  )),
+                  ...recent.take(3).map((land) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Card(child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      leading: Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: AppColors.surfaceElevated, borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.landscape_rounded, color: AppColors.forestPrimary)),
+                      title: Text(land.landName, style: AppTypography.titleMedium),
+                      subtitle: Padding(padding: const EdgeInsets.only(top: 6), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text('${land.municipality} · ${land.estimatedAreaHectares.toStringAsFixed(1)} هكتار', style: AppTypography.bodyMedium),
+                        const SizedBox(height: 6), Text(land.status.label, style: AppTypography.labelMedium.copyWith(color: land.status.color)),
+                      ])),
+                      trailing: const Icon(Icons.chevron_left_rounded),
+                      onTap: () => _open(context, Screen20LandRecordDetails(record: land)),
+                    )),
+                  )),
+                  const SizedBox(height: 16),
+                  _assistant(context),
+                  const SizedBox(height: 26),
+                  _heading('خدمات تساعدك تنمو', 'كل الخدمات', () => state.setTabIndex(2)),
+                  const SizedBox(height: 12),
+                  _service(context, Icons.grass_rounded, 'دليل البذور', 'تعرّف على الأصناف والمواسم الزراعية', const SeedsCatalogScreen()),
                   const SizedBox(height: 10),
-                  _buildQuickServicesGrid(context, appState),
-
-                  const SizedBox(height: 22),
-
-                  // 7. Recent Activity Feed
-                  Text(
-                    'النشاط والتحديثات الأخيرة',
-                    style: AppTypography.titleLarge.copyWith(
-                      color: AppColors.forestDarkest,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  _buildRecentActivity(context, appState),
-
-                  const SizedBox(height: 30),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeroGreeting(
-    BuildContext context,
-    dynamic user,
-    AppState appState,
-  ) {
-    return Container(
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF0F3827), Color(0xFF14532D), Color(0xFF1B4D3E)],
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -40,
-            right: -20,
-            child: Container(
-              width: 180,
-              height: 180,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.limeBright.withValues(alpha: 0.08),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'مرحباً بك،',
-                            style: AppTypography.bodyMedium.copyWith(
-                              color: AppColors.limeLight.withValues(
-                                alpha: 0.85,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            user.fullName,
-                            style: AppTypography.headlineMedium.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.location_on_rounded,
-                                size: 14,
-                                color: AppColors.limeBright,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${user.city} • بطاقة فلاح: ${user.agriculturalCardNumber}',
-                                style: AppTypography.bodySmall.copyWith(
-                                  color: Colors.white70,
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.limeBright,
-                        foregroundColor: AppColors.forestDarkest,
-                        elevation: 4,
-                        shadowColor: Colors.black.withValues(alpha: 0.3),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AddLandScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.add_location_alt_rounded,
-                        size: 18,
-                        color: AppColors.forestDarkest,
-                      ),
-                      label: Text(
-                        'إضافة أرض',
-                        style: AppTypography.labelLarge.copyWith(
-                          color: AppColors.forestDarkest,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMinistryLinkBanner(
-    BuildContext context,
-    List<MinistrySupplyOrder> readyOrders,
-  ) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfacePure,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppColors.forestPrimary.withValues(alpha: 0.3),
-          width: 1.2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            offset: const Offset(0, 3),
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.account_balance_rounded,
-                  color: AppColors.forestPrimary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'بوابة الربط مع وزارة الزراعة والجمعيات',
-                      style: AppTypography.titleMedium.copyWith(
-                        color: AppColors.forestDarkest,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'توفير الأسمدة والبذور الأصلية وأدوية المحاصيل المدعومة',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (readyOrders.isNotEmpty)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.statusApprovedBg,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${readyOrders.length} إذن صرف جاهز',
-                    style: AppTypography.labelSmall.copyWith(
-                      color: AppColors.statusApproved,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const Divider(),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.forestPrimary),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const MinistryOrdersScreen(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.qr_code_2_rounded,
-                    size: 18,
-                    color: AppColors.forestPrimary,
-                  ),
-                  label: const Text('متابعة أذونات الصرف'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.forestPrimary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                  ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => const CreateSupplyRequestDialog(),
-                    );
-                  },
-                  icon: const Icon(Icons.add_shopping_cart_rounded, size: 18),
-                  label: const Text('طلب حصة مدعومة'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRecordStatusesRow(
-    BuildContext context,
-    AppState appState,
-    int approved,
-    int review,
-    int draft,
-  ) {
-    return Row(
-      children: [
-        _buildStatusCard(
-          context: context,
-          title: 'معتمدة وموثقة',
-          count: approved,
-          statusColor: AppColors.statusApproved,
-          bgColor: AppColors.statusApprovedBg,
-          icon: Icons.verified_rounded,
-          onTap: () => appState.setTabIndex(1),
-        ),
-        const SizedBox(width: 10),
-        _buildStatusCard(
-          context: context,
-          title: 'قيد المراجعة',
-          count: review,
-          statusColor: AppColors.statusReview,
-          bgColor: AppColors.statusReviewBg,
-          icon: Icons.hourglass_top_rounded,
-          onTap: () => appState.setTabIndex(1),
-        ),
-        const SizedBox(width: 10),
-        _buildStatusCard(
-          context: context,
-          title: 'مسودات',
-          count: draft,
-          statusColor: AppColors.statusDraft,
-          bgColor: AppColors.statusDraftBg,
-          icon: Icons.edit_note_rounded,
-          onTap: () => appState.setTabIndex(1),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatusCard({
-    required BuildContext context,
-    required String title,
-    required int count,
-    required Color statusColor,
-    required Color bgColor,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-          decoration: BoxDecoration(
-            color: AppColors.surfacePure,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.surfaceBorder, width: 1.2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                offset: const Offset(0, 2),
-                blurRadius: 6,
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: bgColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(icon, color: statusColor, size: 16),
-                  ),
-                  Text(
-                    '$count',
-                    style: AppTypography.headlineMedium.copyWith(
-                      color: statusColor,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                style: AppTypography.titleSmall.copyWith(fontSize: 12),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickServicesGrid(BuildContext context, AppState appState) {
-    final services = [
-      _QuickServiceItem(
-        title: 'صرف الأدوية والأسمدة',
-        subtitle: 'منظومة حصص الوزارة والجمعيات',
-        icon: Icons.account_balance_rounded,
-        color: AppColors.forestPrimary,
-        bgColor: const Color(0xFFE8F5E9),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const MinistryOrdersScreen()),
-          );
-        },
-      ),
-      _QuickServiceItem(
-        title: 'تشخيص النبات الذكي',
-        subtitle: 'فحص فوري عبر كاميرا Gemini',
-        icon: Icons.camera_alt_rounded,
-        color: AppColors.limeDark,
-        bgColor: AppColors.limeLight,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CropDiseaseScannerScreen()),
-          );
-        },
-      ),
-      _QuickServiceItem(
-        title: 'حاسبة التسميد والري',
-        subtitle: 'حساب جرعات NPK بالذكاء',
-        icon: Icons.calculate_rounded,
-        color: const Color(0xFF0284C7),
-        bgColor: const Color(0xFFE0F2FE),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const FertilizerCalculatorScreen(),
-            ),
-          );
-        },
-      ),
-      _QuickServiceItem(
-        title: 'البذور الأصلية والروزنامة',
-        subtitle: 'أصناف معتمدة ومواعيد البذر',
-        icon: Icons.grass_rounded,
-        color: const Color(0xFFD97706),
-        bgColor: const Color(0xFFFEF3C7),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SeedsCatalogScreen()),
-          );
-        },
-      ),
-    ];
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: services.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 1.6,
-      ),
-      itemBuilder: (context, index) {
-        final item = services[index];
-        return InkWell(
-          onTap: item.onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.surfacePure,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.surfaceBorder, width: 1.2),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: item.bgColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(item.icon, color: item.color, size: 22),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        item.title,
-                        style: AppTypography.titleSmall.copyWith(
-                          color: AppColors.forestDarkest,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        item.subtitle,
-                        style: AppTypography.bodySmall.copyWith(fontSize: 10),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+                  _service(context, Icons.calculate_outlined, 'حاسبة التسميد', 'خطّط لاحتياجات محاصيلك', const FertilizerCalculatorScreen()),
+                  const SizedBox(height: 20),
+                  Text('نسخة عرض جامعية · بعض الخدمات والبيانات تجريبية', style: AppTypography.bodySmall),
+                ]),
+              )),
+            );
+          }),
         );
       },
     );
   }
 
-  Widget _buildRecentActivity(BuildContext context, AppState appState) {
-    final notifications = appState.notifications.take(3).toList();
-
-    if (notifications.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text('لا توجد إشعارات حديثة.'),
-      );
-    }
-
-    return Column(
-      children: notifications.map((notification) {
-        final color = notification.statusType?.color ?? AppColors.forestPrimary;
-
-        final icon =
-            notification.statusType?.icon ?? Icons.notifications_outlined;
-
-        return Card(
-          margin: const EdgeInsets.only(bottom: 8),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: const BorderSide(color: AppColors.surfaceBorder),
-          ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 4,
-            ),
-            leading: CircleAvatar(
-              backgroundColor: color.withValues(alpha: 0.12),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            title: Text(
-              notification.title,
-              style: AppTypography.titleMedium.copyWith(
-                fontSize: 13,
-                fontWeight: notification.isRead
-                    ? FontWeight.normal
-                    : FontWeight.bold,
-              ),
-            ),
-            subtitle: Text(
-              notification.body,
-              style: AppTypography.bodySmall,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: const Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 14,
-              color: AppColors.textLight,
-            ),
-            onTap: () {
-              appState.markNotificationAsRead(notification.id);
-
-              if (notification.relatedRecordId != null) {
-                appState.setTabIndex(1);
-              } else {
-                appState.setTabIndex(3);
-              }
-            },
-          ),
-        );
-      }).toList(),
+  Widget _hero(BuildContext context, AppState state, int count, double area) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(gradient: AppColors.forestHeroGradient, borderRadius: BorderRadius.circular(26)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Icon(Icons.spa_outlined, color: Color(0xFFD9E7B8), size: 34),
+        const SizedBox(height: 16),
+        Text('كل أرض، بداية خير.', style: AppTypography.displayMedium.copyWith(color: Colors.white)),
+        const SizedBox(height: 10),
+        Text('$count سجلات أراضٍ · ${area.toStringAsFixed(1)} هكتار مسجّل', style: AppTypography.bodyLarge.copyWith(color: const Color(0xFFE0E9D9))),
+        const SizedBox(height: 22),
+        FilledButton.icon(
+          style: FilledButton.styleFrom(backgroundColor: const Color(0xFFE0EABF), foregroundColor: AppColors.forestDarkest),
+          onPressed: () {
+            state.resetDraft();
+            _open(context, const Screen21AddLandOwnerDetails());
+          },
+          icon: const Icon(Icons.add_rounded), label: const Text('تسجيل أرض جديدة'),
+        ),
+      ]),
     );
   }
-}
 
-class _QuickServiceItem {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final Color bgColor;
-  final VoidCallback onTap;
+  Widget _heading(String title, String action, VoidCallback onTap) {
+    return Wrap(alignment: WrapAlignment.spaceBetween, crossAxisAlignment: WrapCrossAlignment.center, spacing: 16, children: [
+      Text(title, style: AppTypography.titleLarge),
+      TextButton(onPressed: onTap, child: Text(action)),
+    ]);
+  }
 
-  _QuickServiceItem({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.color,
-    required this.bgColor,
-    required this.onTap,
-  });
+  Widget _assistant(BuildContext context) {
+    return Card(color: AppColors.surfaceElevated, child: InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: () => _open(context, const AIAssistantScreen()),
+      child: Padding(padding: const EdgeInsets.all(20), child: Row(children: [
+        const Icon(Icons.auto_awesome_outlined, color: AppColors.forestPrimary, size: 30),
+        const SizedBox(width: 16),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text('اسأل مساعد فلاح', style: AppTypography.titleLarge),
+          const SizedBox(height: 5),
+          Text('إرشاد زراعي، بخطوة بسيطة', style: AppTypography.bodyMedium),
+        ])),
+        const Icon(Icons.chevron_left_rounded, color: AppColors.forestPrimary),
+      ])),
+    ));
+  }
+
+  Widget _service(BuildContext context, IconData icon, String title, String subtitle, Widget page) {
+    return Card(child: ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      leading: Icon(icon, color: AppColors.forestPrimary, size: 28),
+      title: Text(title, style: AppTypography.titleMedium),
+      subtitle: Text(subtitle, style: AppTypography.bodyMedium),
+      trailing: const Icon(Icons.chevron_left_rounded),
+      onTap: () => _open(context, page),
+    ));
+  }
 }

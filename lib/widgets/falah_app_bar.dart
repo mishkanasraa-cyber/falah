@@ -19,7 +19,7 @@ class FalahAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 8);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 24);
 
   void _openDropdownMenu(BuildContext context, GlobalKey buttonKey) {
     final renderBox = buttonKey.currentContext?.findRenderObject() as RenderBox?;
@@ -48,13 +48,7 @@ class FalahAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       decoration: const BoxDecoration(
         gradient: AppColors.forestHeroGradient,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x25071F15),
-            offset: Offset(0, 3),
-            blurRadius: 8,
-          ),
-        ],
+
       ),
       child: SafeArea(
         bottom: false,
@@ -86,7 +80,7 @@ class FalahAppBar extends StatelessWidget implements PreferredSizeWidget {
                             style: const TextStyle(
                               color: AppColors.forestDarkest,
                               fontWeight: FontWeight.w800,
-                              fontSize: 11,
+                              fontSize: 12,
                             ),
                           ),
                         ),
@@ -124,7 +118,7 @@ class FalahAppBar extends StatelessWidget implements PreferredSizeWidget {
                         subtitle!,
                         style: AppTypography.bodySmall.copyWith(
                           color: AppColors.limeLight.withValues(alpha: 0.9),
-                          fontSize: 11,
+                          fontSize: 12,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

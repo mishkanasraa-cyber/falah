@@ -7,6 +7,17 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      fontFamily: 'FalahArabic',
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(fontSize: 16, height: 1.6),
+        bodyMedium: TextStyle(fontSize: 14, height: 1.6),
+      ),
+      filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(
+        minimumSize: const Size(48, 52),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        textStyle: const TextStyle(fontFamily: 'FalahArabic', fontWeight: FontWeight.w700, fontSize: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      )),
       brightness: Brightness.light,
       primaryColor: AppColors.forestPrimary,
       scaffoldBackgroundColor: AppColors.warmBackground,
@@ -41,15 +52,15 @@ class AppTheme {
         color: AppColors.surfaceCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: AppColors.surfaceBorder, width: 1),
         ),
         margin: EdgeInsets.zero,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.limePrimary,
-          foregroundColor: AppColors.textOnLime,
+          backgroundColor: AppColors.forestPrimary,
+          foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -111,7 +122,7 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppColors.surfacePure,
-        elevation: 8,
+        elevation: 0,
         indicatorColor: AppColors.limeLight,
         shadowColor: const Color(0x10000000),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {

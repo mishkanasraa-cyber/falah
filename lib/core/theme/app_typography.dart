@@ -3,6 +3,7 @@ import 'app_colors.dart';
 
 class AppTypography {
   static const List<String> arabicFontFamilyFallback = [
+    'FalahArabic',
     'Cairo',
     'Tajawal',
     'Almarai',
@@ -86,7 +87,7 @@ class AppTypography {
       );
 
   static TextStyle get bodySmall => const TextStyle(
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: FontWeight.w400,
         color: AppColors.textMuted,
         height: 1.5,
@@ -108,7 +109,7 @@ class AppTypography {
       );
 
   static TextStyle get labelSmall => const TextStyle(
-        fontSize: 10,
+        fontSize: 11,
         fontWeight: FontWeight.w600,
         color: AppColors.textMuted,
         fontFamilyFallback: arabicFontFamilyFallback,

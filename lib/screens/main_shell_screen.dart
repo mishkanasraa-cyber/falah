@@ -63,6 +63,8 @@ class _MainShellScreenState extends State<MainShellScreen> {
           ],
         ),
         child: NavigationBar(
+          height: 76,
+          animationDuration: const Duration(milliseconds: 250),
           selectedIndex: _appState.currentTabIndex,
           onDestinationSelected: (index) => _appState.setTabIndex(index),
           backgroundColor: AppColors.surfacePure,

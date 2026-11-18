@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_typography.dart';
 import '../models/user_role.dart';
@@ -29,9 +28,7 @@ class FalahDropdownMenu {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
             decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: AppColors.surfaceDivider),
-              ),
+              border: Border(bottom: BorderSide(color: AppColors.surfaceDivider)),
             ),
             child: Row(
               children: [
@@ -66,10 +63,7 @@ class FalahDropdownMenu {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: AppColors.limeLight,
                               borderRadius: BorderRadius.circular(6),
@@ -126,30 +120,20 @@ class FalahDropdownMenu {
               Icon(
                 Icons.agriculture_rounded,
                 size: 18,
-                color: user.role == UserRole.farmer
-                    ? AppColors.limeDark
-                    : AppColors.textSecondary,
+                color: user.role == UserRole.farmer ? AppColors.limeDark : AppColors.textSecondary,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'فلاح / مزارع',
                   style: AppTypography.bodyMedium.copyWith(
-                    fontWeight: user.role == UserRole.farmer
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                    color: user.role == UserRole.farmer
-                        ? AppColors.forestPrimary
-                        : AppColors.textPrimary,
+                    fontWeight: user.role == UserRole.farmer ? FontWeight.bold : FontWeight.normal,
+                    color: user.role == UserRole.farmer ? AppColors.forestPrimary : AppColors.textPrimary,
                   ),
                 ),
               ),
               if (user.role == UserRole.farmer)
-                const Icon(
-                  Icons.check_circle_rounded,
-                  size: 16,
-                  color: AppColors.limePrimary,
-                ),
+                const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.limePrimary),
             ],
           ),
         ),
@@ -164,30 +148,20 @@ class FalahDropdownMenu {
               Icon(
                 Icons.verified_user_rounded,
                 size: 18,
-                color: user.role == UserRole.inspector
-                    ? AppColors.limeDark
-                    : AppColors.textSecondary,
+                color: user.role == UserRole.inspector ? AppColors.limeDark : AppColors.textSecondary,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'مهندس زراعي ومفتش',
                   style: AppTypography.bodyMedium.copyWith(
-                    fontWeight: user.role == UserRole.inspector
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                    color: user.role == UserRole.inspector
-                        ? AppColors.forestPrimary
-                        : AppColors.textPrimary,
+                    fontWeight: user.role == UserRole.inspector ? FontWeight.bold : FontWeight.normal,
+                    color: user.role == UserRole.inspector ? AppColors.forestPrimary : AppColors.textPrimary,
                   ),
                 ),
               ),
               if (user.role == UserRole.inspector)
-                const Icon(
-                  Icons.check_circle_rounded,
-                  size: 16,
-                  color: AppColors.limePrimary,
-                ),
+                const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.limePrimary),
             ],
           ),
         ),
@@ -202,30 +176,20 @@ class FalahDropdownMenu {
               Icon(
                 Icons.storefront_rounded,
                 size: 18,
-                color: user.role == UserRole.cooperative
-                    ? AppColors.limeDark
-                    : AppColors.textSecondary,
+                color: user.role == UserRole.cooperative ? AppColors.limeDark : AppColors.textSecondary,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'مشرف جمعية زراعية',
                   style: AppTypography.bodyMedium.copyWith(
-                    fontWeight: user.role == UserRole.cooperative
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                    color: user.role == UserRole.cooperative
-                        ? AppColors.forestPrimary
-                        : AppColors.textPrimary,
+                    fontWeight: user.role == UserRole.cooperative ? FontWeight.bold : FontWeight.normal,
+                    color: user.role == UserRole.cooperative ? AppColors.forestPrimary : AppColors.textPrimary,
                   ),
                 ),
               ),
               if (user.role == UserRole.cooperative)
-                const Icon(
-                  Icons.check_circle_rounded,
-                  size: 16,
-                  color: AppColors.limePrimary,
-                ),
+                const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.limePrimary),
             ],
           ),
         ),
@@ -236,32 +200,19 @@ class FalahDropdownMenu {
         PopupMenuItem<void>(
           onTap: () {
             Future.delayed(Duration.zero, () {
-              if (!navigator.mounted) {
-                return;
-              }
-              final dialogContext = navigator.context;
-              if (!dialogContext.mounted) {
-                return;
-              }
               showDialog(
-                context: dialogContext,
+                context: navigator.context,
                 builder: (ctx) => const GeminiApiKeyDialog(),
               );
             });
           },
           child: Row(
             children: [
-              const Icon(
-                Icons.psychology_rounded,
-                size: 18,
-                color: AppColors.forestPrimary,
-              ),
+              const Icon(Icons.psychology_rounded, size: 18, color: AppColors.forestPrimary),
               const SizedBox(width: 10),
               Text(
                 'إعدادات مفتاح Gemini AI',
-                style: AppTypography.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -271,15 +222,8 @@ class FalahDropdownMenu {
         PopupMenuItem<void>(
           onTap: () {
             Future.delayed(Duration.zero, () {
-              if (!navigator.mounted) {
-                return;
-              }
-              final dialogContext = navigator.context;
-              if (!dialogContext.mounted) {
-                return;
-              }
               showAboutDialog(
-                context: dialogContext,
+                context: navigator.context,
                 applicationName: 'منظومة فلاح الزراعية',
                 applicationVersion: '2.0.0 (دولة ليبيا)',
                 applicationIcon: Container(
@@ -288,21 +232,14 @@ class FalahDropdownMenu {
                     color: AppColors.forestDark,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
-                    Icons.eco_rounded,
-                    color: AppColors.limeBright,
-                    size: 32,
-                  ),
+                  child: const Icon(Icons.eco_rounded, color: AppColors.limeBright, size: 32),
                 ),
                 children: [
                   const Text(
                     'تطبيق فلاح هو منصة رقمية سيادية للتوثيق العقاري وحصر الحيازات الزراعية في ليبيا، '
                     'وربط المزارع بوزارة الزراعة لتوفير الأسمدة والأدوية والبذور الأصلية، '
                     'مدعومة بمستشار ذكي يستند إلى تقنيات Gemini.',
-                    style: TextStyle(
-                      fontFamilyFallback:
-                          AppTypography.arabicFontFamilyFallback,
-                    ),
+                    style: TextStyle(fontFamilyFallback: AppTypography.arabicFontFamilyFallback),
                   ),
                 ],
               );
@@ -310,11 +247,7 @@ class FalahDropdownMenu {
           },
           child: Row(
             children: [
-              const Icon(
-                Icons.info_outline_rounded,
-                size: 18,
-                color: AppColors.textSecondary,
-              ),
+              const Icon(Icons.info_outline_rounded, size: 18, color: AppColors.textSecondary),
               const SizedBox(width: 10),
               Text('عن فلاح والدعم الفني', style: AppTypography.bodyMedium),
             ],

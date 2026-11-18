@@ -3,24 +3,24 @@ import 'package:flutter/material.dart';
 class AppColors {
   // Deep Forest Green Palette (Emphasis, Headers, Navigation)
   static const Color forestDarkest = Color(0xFF071F15);
-  static const Color forestDark = Color(0xFF0F3827);
-  static const Color forestMedium = Color(0xFF1B4D3E);
-  static const Color forestPrimary = Color(0xFF155E3D);
+  static const Color forestDark = Color(0xFF294B36);
+  static const Color forestMedium = Color(0xFF3C6147);
+  static const Color forestPrimary = Color(0xFF365B40);
   static const Color forestSurface = Color(0xFF1E3A2F);
   static const Color forestAccent = Color(0xFF2D6A4F);
 
   // Fresh Lime Accents (Primary Actions, CTAs, Highlights)
-  static const Color limeBright = Color(0xFF84CC16);
-  static const Color limePrimary = Color(0xFF65A30D);
-  static const Color limeDark = Color(0xFF4D7C0F);
-  static const Color limeLight = Color(0xFFECFCCB);
-  static const Color limeBorder = Color(0xFFA3E635);
-  static const Color limeGlow = Color(0x4084CC16);
+  static const Color limeBright = Color(0xFFC9DCA0);
+  static const Color limePrimary = Color(0xFF54733E);
+  static const Color limeDark = Color(0xFF3F5E30);
+  static const Color limeLight = Color(0xFFEDF2E3);
+  static const Color limeBorder = Color(0xFFD2DEC1);
+  static const Color limeGlow = Color(0x40C9DCA0);
 
   // Warm Off-White & Earth Surfaces (Readability, Forms, Clean Cards)
-  static const Color warmBackground = Color(0xFFF8FAF5);
+  static const Color warmBackground = Color(0xFFF7F7F0);
   static const Color surfacePure = Color(0xFFFFFFFF);
-  static const Color surfaceElevated = Color(0xFFF3F6EE);
+  static const Color surfaceElevated = Color(0xFFEEF1E7);
   static const Color surfaceCard = Color(0xFFFFFFFF);
   static const Color surfaceBorder = Color(0xFFE2E8DE);
   static const Color surfaceDivider = Color(0xFFEAEFE7);
@@ -45,7 +45,7 @@ class AppColors {
 
   // Translucent / Glass Surfaces
   static const Color glassWhite = Color(0xEEFFFFFF);
-  static const Color glassDark = Color(0xD00F3827);
+  static const Color glassDark = Color(0xD0294B36);
   static const Color glassBorder = Color(0x332D6A4F);
 
   // Gradients
@@ -53,9 +53,9 @@ class AppColors {
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
     colors: [
-      Color(0xFF0A291B),
-      Color(0xFF0F3827),
-      Color(0xFF1B4D3E),
+      Color(0xFF203B2D),
+      Color(0xFF294B36),
+      Color(0xFF3C6147),
     ],
   );
 
@@ -63,8 +63,8 @@ class AppColors {
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,
     colors: [
-      Color(0xFF84CC16),
-      Color(0xFF65A30D),
+      Color(0xFFC9DCA0),
+      Color(0xFF54733E),
     ],
   );
 
@@ -81,8 +81,8 @@ class AppColors {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0x30155E3D),
-      Color(0x1084CC16),
+      Color(0x30365B40),
+      Color(0x10C9DCA0),
       Colors.transparent,
     ],
   );

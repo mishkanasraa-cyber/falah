@@ -167,9 +167,6 @@ class FalahNavScaffold extends StatelessWidget {
         PopupMenuItem<void>(
           onTap: () {
             Future.delayed(Duration.zero, () {
-              if (!context.mounted) {
-                return;
-              }
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
