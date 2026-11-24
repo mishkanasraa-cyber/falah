@@ -106,8 +106,18 @@ class AppTheme {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.statusAlert, width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFFE5A4A0), width: 1.2),
         ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFB3261E), width: 1.5),
+        ),
+        errorStyle: const TextStyle(
+          fontSize: 12,
+          color: Color(0xFFB3261E),
+          height: 1.2,
+        ),
+        errorMaxLines: 1,
         hintStyle: const TextStyle(
           color: AppColors.textMuted,
           fontSize: 13,

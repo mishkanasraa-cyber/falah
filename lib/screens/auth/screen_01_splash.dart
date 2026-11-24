@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../../widgets/falah_logo.dart';
+import '../../widgets/app_logo.dart';
 import 'screen_05_welcome.dart';
 
 class Screen01Splash extends StatefulWidget {
@@ -121,11 +121,7 @@ class _Screen01SplashState extends State<Screen01Splash>
                     scale: _scaleAnimation,
                     child: FadeTransition(
                       opacity: _fadeAnimation,
-                      child: const FalahLogo(
-                        size: 120,
-                        showCircleBackground: true,
-                        circleColor: Colors.white,
-                      ),
+                      child: const AppLogo(size: 170),
                     ),
                   ),
 

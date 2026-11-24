@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../../widgets/falah_logo.dart';
+import '../../widgets/app_logo.dart';
 import 'screen_07_login.dart';
 import 'screen_08_create_account.dart';
 
@@ -10,201 +10,187 @@ class Screen05Welcome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Top decorative green band
+            // ─── Upper section ───────────────────────────────────────────
             Expanded(
-              flex: 5,
+              flex: 6,
               child: Stack(
-                alignment: Alignment.topCenter,
                 children: [
-                  // Light green decorative background
+                  // Light-green top-right blob
                   Positioned(
                     top: 0,
-                    left: 0,
                     right: 0,
                     child: Container(
-                      height: size.height * 0.20,
+                      width: 130,
+                      height: 110,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFEDF5E8),
+                        color: Color(0xFFD6EDD0),
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(60),
-                          bottomRight: Radius.circular(60),
+                          bottomLeft: Radius.circular(120),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Smaller lighter blob inside
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: 80,
+                      height: 65,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFEBF5E6),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(80),
                         ),
                       ),
                     ),
                   ),
 
-                  // Corner accent
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      width: 100,
-                      height: 80,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFD7ECC8),
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(100),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Center content
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Logo — no circle background, just the image
+                          const AppLogo(size: 130),
 
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 20),
+                          const SizedBox(height: 22),
 
-                      // Real logo
-                      const FalahLogo(size: 110),
-
-                      const SizedBox(height: 20),
-
-                      // Welcome title
-                      Text(
-                        'مرحباً بك في فلاح',
-                        style: AppTypography.displayMedium.copyWith(
-                          color: const Color(0xFF1A2E26),
-                          fontSize: 28,
-                          fontWeight: FontWeight.w900,
-                          fontFamilyFallback:
-                              AppTypography.arabicFontFamilyFallback,
-                        ),
-                      ),
-
-                      const SizedBox(height: 14),
-
-                      // Description
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 32),
-                        child: Text(
-                          'منصتك الذكية لتسجيل الأراضي\nالزراعية وإدارة بيانات محاصيلك\nبكل سهولة.',
-                          style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                            fontSize: 14,
-                            height: 1.7,
-                            fontFamilyFallback:
-                                AppTypography.arabicFontFamilyFallback,
+                          // Title
+                          Text(
+                            'مرحباً بك في فلاح',
+                            style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xFF1B2E22),
+                              height: 1.3,
+                              fontFamilyFallback:
+                                  AppTypography.arabicFontFamilyFallback,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
+
+                          const SizedBox(height: 12),
+
+                          // Description
+                          Text(
+                            'منصتك الذكية لتسجيل الأراضي الزراعية\nوإدارة بيانات محاصيلك يكل سهولة.',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: const Color(0xFF6B7B72),
+                              height: 1.75,
+                              fontFamilyFallback:
+                                  AppTypography.arabicFontFamilyFallback,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
             ),
 
-            // Bottom buttons section
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Login button (filled green)
-                    SizedBox(
-                      height: 54,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E6B40),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+            // ─── Buttons section ─────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Login — filled green
+                  SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2B6040),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const Screen07Login(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          'تسجيل الدخول',
-                          style: AppTypography.labelLarge.copyWith(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            fontFamilyFallback:
-                                AppTypography.arabicFontFamilyFallback,
-                          ),
+                      ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const Screen07Login()),
+                      ),
+                      child: Text(
+                        'تسجيل الدخول',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontFamilyFallback:
+                              AppTypography.arabicFontFamilyFallback,
                         ),
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 14),
+                  const SizedBox(height: 12),
 
-                    // Create account button (outlined)
-                    SizedBox(
-                      height: 54,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF1A2E26),
-                          side: const BorderSide(
-                            color: Color(0xFFCCCCCC),
-                            width: 1.5,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                  // Create account — outlined
+                  SizedBox(
+                    height: 52,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF1B2E22),
+                        side: const BorderSide(
+                            color: Color(0xFFBDBDBD), width: 1.4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const Screen08CreateAccount(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          'إنشاء حساب جديد',
-                          style: AppTypography.labelLarge.copyWith(
-                            color: const Color(0xFF1A2E26),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            fontFamilyFallback:
-                                AppTypography.arabicFontFamilyFallback,
-                          ),
+                      ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const Screen08CreateAccount()),
+                      ),
+                      child: Text(
+                        'إنشاء حساب جديد',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF1B2E22),
+                          fontFamilyFallback:
+                              AppTypography.arabicFontFamilyFallback,
                         ),
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                    // Bottom tagline
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.eco_rounded,
-                          size: 14,
-                          color: Color(0xFF2E6B40),
+                  // Bottom tagline
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.eco_rounded,
+                          size: 14, color: Color(0xFF2B6040)),
+                      const SizedBox(width: 5),
+                      Text(
+                        'معاً نحو زراعة رقمية مستدامة',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textMuted,
+                          fontFamilyFallback:
+                              AppTypography.arabicFontFamilyFallback,
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'معاً نحو زراعة رقمية مستدامة',
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textMuted,
-                            fontSize: 12,
-                            fontFamilyFallback:
-                                AppTypography.arabicFontFamilyFallback,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+                ],
               ),
             ),
           ],
