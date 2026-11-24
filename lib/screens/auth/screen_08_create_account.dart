@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_typography.dart';
 import '../../models/app_models.dart';
 import '../../widgets/app_logo.dart';
+import '../../widgets/falah_ui.dart';
 import 'screen_07_login.dart';
 import 'screen_09_identity_municipality.dart';
 
 class Screen08CreateAccount extends StatefulWidget {
   final UserRole selectedRole;
-  const Screen08CreateAccount({super.key, this.selectedRole = UserRole.farmer});
+  const Screen08CreateAccount(
+      {super.key, this.selectedRole = UserRole.farmer});
 
   @override
   State<Screen08CreateAccount> createState() => _Screen08CreateAccountState();
@@ -21,19 +21,19 @@ class _Screen08CreateAccountState extends State<Screen08CreateAccount> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
-  bool _obscurePass = true;
-  bool _obscureConfirm = true;
+  bool _hidePass = true;
+  bool _hideConfirm = true;
   String? _municipality;
   String? _userType;
 
-  final List<String> _municipalities = [
+  static const _municipalities = [
     'ترهونة', 'السواني بن آدم', 'العزيزية', 'سيدي السائح',
     'قصر بن غشير', 'عين زارة', 'تاجوراء', 'مصراتة', 'زليتن',
     'الخمس', 'الزاوية', 'صبراتة', 'غريان', 'بني وليد',
     'المرج', 'البيضاء', 'بنغازي', 'سبها',
   ];
 
-  final List<String> _userTypes = [
+  static const _userTypes = [
     'مزارع / صاحب حيازة',
     'موظف حصر زراعي',
     'مهندس زراعي',
@@ -48,15 +48,6 @@ class _Screen08CreateAccountState extends State<Screen08CreateAccount> {
     _passCtrl.dispose();
     _confirmCtrl.dispose();
     super.dispose();
-  }
-
-  /// Libyan phone: 09[1-4] prefix + 7 digits = 10 total
-  String? _validatePhone(String? val) {
-    final v = val?.trim().replaceAll(' ', '') ?? '';
-    if (!RegExp(r'^09[1-4]\d{7}$').hasMatch(v)) {
-      return 'أدخل رقماً صحيحاً مثل 0912345678';
-    }
-    return null;
   }
 
   void _proceed() {
@@ -74,378 +65,234 @@ class _Screen08CreateAccountState extends State<Screen08CreateAccount> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ─── Top decoration + logo ───────────────────────────────
-              SizedBox(
-                height: 185,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 0, right: 0,
-                      child: Container(
-                        width: 120, height: 100,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFD6EDD0),
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(110)),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 0, right: 0,
-                      child: Container(
-                        width: 72, height: 60,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFEBF5E6),
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(72)),
-                        ),
-                      ),
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: 16),
-                          const AppLogo(size: 85),
-                          const SizedBox(height: 6),
-                          Text(
-                            'فلاح',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xFF1B2E22),
-                              fontFamilyFallback:
-                                  AppTypography.arabicFontFamilyFallback,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Page title
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Text(
-                  'إنشاء حساب جديد',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF1B2E22),
-                    fontFamilyFallback: AppTypography.arabicFontFamilyFallback,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-
-              // ─── Form ───────────────────────────────────────────────
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Form(
-                  key: _formKey,
-                  autovalidateMode: AutovalidateMode.disabled,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // 1. Full name
-                      _field(
-                        ctrl: _nameCtrl,
-                        hint: 'الاسم الكامل',
-                        icon: Icons.person_outline_rounded,
-                        validator: (v) => (v == null || v.trim().length < 3)
-                            ? 'يرجى إدخال الاسم الكامل'
-                            : null,
-                      ),
-                      const SizedBox(height: 10),
-
-                      // 2. Phone
-                      _field(
-                        ctrl: _phoneCtrl,
-                        hint: 'رقم الهاتف',
-                        icon: Icons.phone_rounded,
-                        keyboardType: TextInputType.phone,
-                        maxLength: 10,
-                        validator: _validatePhone,
-                      ),
-                      const SizedBox(height: 10),
-
-                      // 3. Email
-                      _field(
-                        ctrl: _emailCtrl,
-                        hint: 'البريد الإلكتروني',
-                        icon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(height: 10),
-
-                      // 4. Municipality dropdown
-                      _dropdown(
-                        value: _municipality,
-                        hint: 'البلدية',
-                        icon: Icons.location_on_outlined,
-                        items: _municipalities,
-                        onChanged: (v) => setState(() => _municipality = v),
-                        validator: (v) =>
-                            v == null ? 'يرجى اختيار البلدية' : null,
-                      ),
-                      const SizedBox(height: 10),
-
-                      // 5. User type dropdown
-                      _dropdown(
-                        value: _userType,
-                        hint: 'نوع المستخدم',
-                        icon: Icons.people_outline_rounded,
-                        items: _userTypes,
-                        onChanged: (v) => setState(() => _userType = v),
-                        validator: (v) =>
-                            v == null ? 'يرجى اختيار نوع المستخدم' : null,
-                      ),
-                      const SizedBox(height: 10),
-
-                      // 6. Password
-                      _field(
-                        ctrl: _passCtrl,
-                        hint: 'كلمة المرور',
-                        icon: Icons.lock_outline_rounded,
-                        obscureText: _obscurePass,
-                        suffixIcon: GestureDetector(
-                          onTap: () =>
-                              setState(() => _obscurePass = !_obscurePass),
-                          child: Icon(
-                            _obscurePass
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: AppColors.textMuted,
-                            size: 20,
-                          ),
-                        ),
-                        validator: (v) => (v == null || v.length < 6)
-                            ? 'لا تقل عن 6 أحرف'
-                            : null,
-                      ),
-                      const SizedBox(height: 10),
-
-                      // 7. Confirm password
-                      _field(
-                        ctrl: _confirmCtrl,
-                        hint: 'تأكيد كلمة المرور',
-                        icon: Icons.lock_outline_rounded,
-                        obscureText: _obscureConfirm,
-                        suffixIcon: GestureDetector(
-                          onTap: () =>
-                              setState(() => _obscureConfirm = !_obscureConfirm),
-                          child: Icon(
-                            _obscureConfirm
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            color: AppColors.textMuted,
-                            size: 20,
-                          ),
-                        ),
-                        validator: (v) => v != _passCtrl.text
-                            ? 'كلمتا المرور غير متطابقتين'
-                            : null,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Create account button
-                      SizedBox(
-                        height: 52,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2B6040),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          onPressed: _proceed,
-                          child: Text(
-                            'إنشاء الحساب',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              fontFamilyFallback:
-                                  AppTypography.arabicFontFamilyFallback,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 14),
-
-                      // Already have account
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'لديك حساب؟ ',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: AppColors.textMuted,
-                              fontFamilyFallback:
-                                  AppTypography.arabicFontFamilyFallback,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const Screen07Login()),
-                            ),
-                            child: Text(
-                              'تسجيل الدخول',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF2B6040),
-                                fontFamilyFallback:
-                                    AppTypography.arabicFontFamilyFallback,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ─── Shared input field ─────────────────────────────────────────────────────
-  Widget _field({
-    required TextEditingController ctrl,
-    required String hint,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    Widget? suffixIcon,
-    int? maxLength,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: ctrl,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-      maxLength: maxLength,
-      style: TextStyle(
-        fontSize: 14,
-        color: const Color(0xFF1B2E22),
-        fontFamilyFallback: AppTypography.arabicFontFamilyFallback,
-      ),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(
-          color: AppColors.textMuted,
-          fontSize: 14,
-          fontFamilyFallback: AppTypography.arabicFontFamilyFallback,
-        ),
-        prefixIcon: Icon(icon, color: AppColors.textMuted, size: 20),
-        suffixIcon: suffixIcon != null
-            ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: suffixIcon)
-            : null,
-        suffixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-        filled: true,
-        fillColor: const Color(0xFFF7F7F7),
-        counterText: '',
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: _border(),
-        enabledBorder: _border(),
-        focusedBorder: _border(focused: true),
-        errorBorder: _border(error: true),
-        focusedErrorBorder: _border(error: true, focused: true),
-        errorMaxLines: 2,
-      ),
-      validator: validator,
-    );
-  }
-
-  // ─── Shared dropdown ────────────────────────────────────────────────────────
+  // ── Shared dropdown ──
   Widget _dropdown({
-    required String? value,
-    required String hint,
+    required String label,
     required IconData icon,
     required List<String> items,
-    required void Function(String?) onChanged,
-    String? Function(String?)? validator,
+    required String? value,
+    required ValueChanged<String?> onChanged,
   }) {
+    OutlineInputBorder b(Color c) => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: c));
+
     return DropdownButtonFormField<String>(
       value: value,
       isExpanded: true,
       icon: const Icon(Icons.keyboard_arrow_down_rounded,
-          color: AppColors.textMuted),
-      style: TextStyle(
-        fontSize: 14,
-        color: const Color(0xFF1B2E22),
-        fontFamilyFallback: AppTypography.arabicFontFamilyFallback,
-      ),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(
-          color: AppColors.textMuted,
-          fontSize: 14,
-          fontFamilyFallback: AppTypography.arabicFontFamilyFallback,
-        ),
-        prefixIcon: Icon(icon, color: AppColors.textMuted, size: 20),
-        filled: true,
-        fillColor: const Color(0xFFF7F7F7),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: _border(),
-        enabledBorder: _border(),
-        focusedBorder: _border(focused: true),
-        errorBorder: _border(error: true),
-      ),
+          color: FalahColors.hint),
+      hint: Text(label,
+          style: const TextStyle(color: FalahColors.hint, fontSize: 14)),
       items: items
-          .map((e) => DropdownMenuItem(
-                value: e,
-                child: Text(e,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamilyFallback:
-                          AppTypography.arabicFontFamilyFallback,
-                    )),
-              ))
+          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
           .toList(),
       onChanged: onChanged,
-      validator: validator,
+      validator: (v) => v == null ? 'اختر $label' : null,
+      style: const TextStyle(fontSize: 14, color: Color(0xFF1B2E22)),
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon, color: FalahColors.hint, size: 20),
+        filled: true,
+        fillColor: Colors.white,
+        isDense: true,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        errorStyle: const TextStyle(
+            fontSize: 11, color: FalahColors.errorSoft, height: 1.2),
+        errorMaxLines: 1,
+        border: b(FalahColors.fieldBorder),
+        enabledBorder: b(FalahColors.fieldBorder),
+        focusedBorder: b(FalahColors.darkGreen),
+        errorBorder: b(FalahColors.errorBorder),
+        focusedErrorBorder: b(FalahColors.errorSoft),
+      ),
     );
   }
 
-  OutlineInputBorder _border({bool focused = false, bool error = false}) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(
-        color: error
-            ? const Color(0xFFDC2626)
-            : focused
-                ? const Color(0xFF2B6040)
-                : const Color(0xFFE0E0E0),
-        width: focused ? 1.5 : 1.0,
+  Widget _eye(bool hidden, VoidCallback onTap) => IconButton(
+        icon: Icon(
+          hidden ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+          color: FalahColors.hint,
+          size: 20,
+        ),
+        onPressed: onTap,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    const gap = SizedBox(height: 12);
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          // ── Top-left blob ──
+          const TopLeftBlob(),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.disabled,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 28),
+
+                    // Logo
+                    const AppLogo(size: 85),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'فلاح',
+                      style: TextStyle(
+                        color: FalahColors.darkGreen,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Title
+                    const Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'إنشاء حساب جديد',
+                        style: TextStyle(
+                          color: FalahColors.darkGreen,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // 1. Full name
+                    FalahField(
+                      controller: _nameCtrl,
+                      label: 'الاسم الكامل',
+                      icon: Icons.person_outline,
+                      validator: (v) => (v ?? '').trim().length >= 3
+                          ? null
+                          : 'أدخل الاسم الكامل',
+                    ),
+                    gap,
+
+                    // 2. Phone
+                    FalahField(
+                      controller: _phoneCtrl,
+                      label: 'رقم الهاتف',
+                      hint: '09XXXXXXXX',
+                      icon: Icons.phone_outlined,
+                      keyboardType: TextInputType.phone,
+                      maxLength: 10,
+                      validator: validateLibyanPhone,
+                    ),
+                    gap,
+
+                    // 3. Email
+                    FalahField(
+                      controller: _emailCtrl,
+                      label: 'البريد الإلكتروني',
+                      icon: Icons.mail_outline,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (v) =>
+                          RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                                  .hasMatch((v ?? '').trim())
+                              ? null
+                              : 'أدخل بريداً إلكترونياً صحيحاً',
+                    ),
+                    gap,
+
+                    // 4. Municipality
+                    _dropdown(
+                      label: 'البلدية',
+                      icon: Icons.location_on_outlined,
+                      items: _municipalities,
+                      value: _municipality,
+                      onChanged: (v) =>
+                          setState(() => _municipality = v),
+                    ),
+                    gap,
+
+                    // 5. User type
+                    _dropdown(
+                      label: 'نوع المستخدم',
+                      icon: Icons.group_outlined,
+                      items: _userTypes,
+                      value: _userType,
+                      onChanged: (v) => setState(() => _userType = v),
+                    ),
+                    gap,
+
+                    // 6. Password
+                    FalahField(
+                      controller: _passCtrl,
+                      label: 'كلمة المرور',
+                      icon: Icons.lock_outline,
+                      obscure: _hidePass,
+                      validator: validatePassword,
+                      suffix: _eye(
+                          _hidePass,
+                          () => setState(() => _hidePass = !_hidePass)),
+                    ),
+                    gap,
+
+                    // 7. Confirm password
+                    FalahField(
+                      controller: _confirmCtrl,
+                      label: 'تأكيد كلمة المرور',
+                      icon: Icons.lock_outline,
+                      obscure: _hideConfirm,
+                      validator: (v) => v == _passCtrl.text
+                          ? null
+                          : 'كلمتا المرور غير متطابقتين',
+                      suffix: _eye(
+                          _hideConfirm,
+                          () =>
+                              setState(() => _hideConfirm = !_hideConfirm)),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Register button
+                    PrimaryButton(
+                        text: 'إنشاء الحساب', onPressed: _proceed),
+                    const SizedBox(height: 14),
+
+                    // Login link
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'لديك حساب بالفعل؟ ',
+                          style: TextStyle(
+                              color: Color(0xFF5A7A65), fontSize: 13),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const Screen07Login()),
+                          ),
+                          child: const Text(
+                            'تسجيل الدخول',
+                            style: TextStyle(
+                              color: FalahColors.darkGreen,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              decoration: TextDecoration.underline,
+                              decorationColor: FalahColors.darkGreen,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 28),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
